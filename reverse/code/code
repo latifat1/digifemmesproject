@@ -1,0 +1,290 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func ToLower(s string) string {
+	lowstr := []rune(s)
+	for i, char := range lowstr {
+		if char >= 65 && char <= 90 {
+			lowstr[i] = lowstr[i] + 32
+		}
+	}
+	return string(lowstr)
+}
+
+func ToUpper(s string) string {
+	upstr := []rune(s)
+	for i, char := range upstr {
+		if char >= 97 && char <= 122 {
+			upstr[i] = upstr[i] - 32
+		}
+	}
+	return string(upstr)
+}
+
+func Capitalize(s string) string {
+	var cap []rune
+	l := ToLower(s) // Mets en miniscule les strings
+	r := []rune(l)  //Converti l en slice de rune
+
+	if len(l) == 1 {
+		if r[0] >= 'a' && r[0] <= 'z' {
+			r[0] = r[0]
+		} //Converti la lettre en Majuscule (Cas d'une lettre)
+	}
+	for i := 0; i < len(l)-1; i++ {
+		if r[0] >= 'a' && r[0] <= 'z' {
+			r[0] = r[0] - 32
+		} // Converti la Première lettre d'un mot en Majuscule
+		if r[i] < 48 || r[i] > 57 && r[i] < 65 || r[i] > 90 && r[i] < 97 || r[i] > 122 {
+			if r[i+1] >= 'a' && r[i+1] <= 'z' {
+				r[i+1] = r[i+1] - 32
+			} // cela prend en compte s'il y a plusieurs mots
+			// et mettra en majuscule chaque mot après un caractère non alphanumérique.
+		}
+		cap = append(cap, r[i]) // cela se produit chaque caractère de chaque index en majuscule (tranche vide de runes).
+		//  Ainsi, les caractères après la première lettre de chaque mot ne sont pas en majuscule
+		// et sont ajoutés en majuscule.
+	}
+	cap = append(cap, r[(len(r)-1)]) // Il s'agit d'ajouter le dernier index à la fin, car la ligne de code précédente
+	// regarde r[i+1], et comme il n'y a pas de r[i+1] à la fin, le code produira une erreur.
+	return string(cap)
+}
+
+func aToAn(s string) []string { // Convertion de a en an ou A en An
+	splitString := strings.Split(s, " ")
+	for i, ele := range splitString {
+		if i >= 0 && i < len(splitString)-1 {
+			if strings.HasPrefix(splitString[i+1], "a") || strings.HasPrefix(splitString[i+1], "e") || strings.HasPrefix(splitString[i+1], "i") || strings.HasPrefix(splitString[i+1], "o") || strings.HasPrefix(splitString[i+1], "u") || strings.HasPrefix(splitString[i+1], "h") {
+				if ele == "a" {
+					splitString[i] = "an"
+				}
+				if ele == "A" {
+					splitString[i] = "An"
+				}
+			}
+			if strings.HasPrefix(splitString[i+1], "A") || strings.HasPrefix(splitString[i+1], "E") || strings.HasPrefix(splitString[i+1], "I") || strings.HasPrefix(splitString[i+1], "O") || strings.HasPrefix(splitString[i+1], "U") || strings.HasPrefix(splitString[i+1], "H") {
+				if ele == "a" {
+					splitString[i] = "an"
+				}
+				if ele == "A" {
+					splitString[i] = "An"
+				}
+			}
+		}
+	}
+	return splitString
+}
+
+func Hex(s string) string { // Permet de convertir un string sous forme hexadécimal en string sous forme décimal
+	if num, err := strconv.ParseInt(s, 16, 64); err == nil {
+		num2 := int(num)
+		itos := strconv.Itoa(num2)
+		s = itos
+	}
+	return s
+}
+
+func Bin(s string) string { // Permet de convertir un string sous forme hexadécimal en string sous forme décimal
+	if num, err := strconv.ParseInt(s, 2, 64); err == nil {
+		num2 := int(num)
+		itos := strconv.Itoa(num2)
+		s = itos
+	}
+	return s
+}
+
+func TrimAtoi(s string) int { //Permet d'extraire un nombre dans une chaîne de caractèreset le convertir en int
+	myRunes := []rune(s)
+	num := 0
+
+	for _, b := range myRunes {
+		if b >= 48 && b <= 57 {
+			num = num*10 + int(b-'0')
+		}
+	}
+	return num
+}
+
+func RemoveIndex(b []rune, index int) []rune { // Permet de supprimer un caractère à un index dans une chaîne de caratères b
+	return append(b[:index], b[index+1:]...)
+}
+
+func Spaces(s string) string {
+	runes := []rune(s)
+	var newRunes []rune
+	for i := range runes {
+		if i >= 0 && i < len(runes)-1 {
+			if runes[i] == '\'' || runes[i] == '.' || runes[i] == ',' || runes[i] == '!' || runes[i] == '?' || runes[i] == ':' || runes[i] == ';' || runes[i] == 8217 {
+				if runes[i+1] >= 48 && runes[i+1] <= 57 {
+					newRunes = append(newRunes, runes[i], ' ')
+				} else if runes[i+1] >= 65 && runes[i+1] <= 90 {
+					newRunes = append(newRunes, runes[i], ' ')
+				} else if runes[i+1] >= 97 && runes[i+1] <= 122 {
+					newRunes = append(newRunes, runes[i], ' ')
+				} else {
+					newRunes = append(newRunes, runes[i])
+				}
+			} else {
+				newRunes = append(newRunes, runes[i])
+			}
+		}
+	}
+	newRunes = append(newRunes, runes[len(runes)-1])
+	for i := range newRunes {
+		if i >= 0 && i < len(newRunes)-1 {
+			if newRunes[i] == ' ' && newRunes[i+1] == '\'' || newRunes[i] == ' ' && newRunes[i+1] == '!' || newRunes[i] == ' ' && newRunes[i+1] == '.' || newRunes[i] == ' ' && newRunes[i+1] == ',' || newRunes[i] == ' ' && newRunes[i+1] == ':' || newRunes[i] == ' ' && newRunes[i+1] == ';' || newRunes[i] == ' ' && newRunes[i+1] == '?' || newRunes[i] == ' ' && newRunes[i-1] == 8216 || newRunes[i] == ' ' && newRunes[i+1] == 8217 {
+				newRunes = RemoveIndex(newRunes, i)
+			}
+		}
+	}
+	for i := range newRunes {
+		if i >= 0 && i < len(newRunes)-1 {
+			if newRunes[i+1] == ' ' && newRunes[i] == '\'' {
+				newRunes = RemoveIndex(newRunes, i+1)
+			}
+		}
+	}
+	return string(newRunes)
+}
+
+func main() {
+	GoReloaded()
+}
+
+func GoReloaded() {
+	inputFile := os.Args[1]         // Lis le nom du fichier d'entrée
+	file, err := os.Open(inputFile) // Permet d'ouVrir le fichier d'entrée
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	scanner := bufio.NewScanner(file)
+	content := ""
+	for scanner.Scan() {
+		content = scanner.Text()
+	}
+
+	sampleString := content              //Copie le contenu du fichier dans la variable sampleString
+	sliceOfString := aToAn(sampleString) //Permet convertir les a/A en an/Ans et a transformé la chaîne d'échantillon en une tranche de chaîne
+	for i := range sliceOfString {
+		if i >= 0 && i < len(sliceOfString)-1 {
+
+			if strings.HasPrefix(sliceOfString[i+1], "(cap") {
+				num := 0
+				if !strings.HasPrefix(sliceOfString[len(sliceOfString)-1], "(cap") {
+
+					num = TrimAtoi(sliceOfString[i+2])
+				}
+				if num > 0 {
+					for j := i; j > i-num; j-- {
+						sliceOfString[j] = Capitalize(sliceOfString[j])
+					}
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+3:]...)
+				} else {
+					sliceOfString[i] = Capitalize(sliceOfString[i])
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+2:]...)
+
+				}
+				if i == len(sliceOfString)-1 {
+					break
+				}
+			}
+
+			if strings.HasPrefix(sliceOfString[i+1], "(up") {
+				num := 0
+				if !strings.HasPrefix(sliceOfString[len(sliceOfString)-1], "(up") {
+
+					num = TrimAtoi(sliceOfString[i+2])
+				}
+				if num > 0 {
+					for j := i; j > i-num; j-- {
+						sliceOfString[j] = ToUpper(sliceOfString[j])
+					}
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+3:]...)
+				} else {
+					sliceOfString[i] = ToUpper(sliceOfString[i])
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+2:]...)
+
+				}
+				if i == len(sliceOfString)-1 {
+					break
+				}
+
+			}
+
+			if strings.HasPrefix(sliceOfString[i+1], "(low") {
+				num := 0
+				if !strings.HasPrefix(sliceOfString[len(sliceOfString)-1], "(low") {
+
+					num = TrimAtoi(sliceOfString[i+2])
+				}
+				if num > 0 {
+					for j := i; j > i-num; j-- {
+						sliceOfString[j] = ToLower(sliceOfString[j])
+					}
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+3:]...)
+				} else {
+					sliceOfString[i] = ToLower(sliceOfString[i])
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+2:]...)
+
+				}
+				if i == len(sliceOfString)-1 {
+					break
+				}
+			}
+
+			if strings.HasPrefix(sliceOfString[i+1], "(hex") {
+				num := 0
+				if !strings.HasPrefix(sliceOfString[len(sliceOfString)-1], "(hex") {
+
+					num = TrimAtoi(sliceOfString[i+2])
+				}
+				if num > 0 {
+					for j := i; j > i-num; j-- {
+						sliceOfString[j] = Hex(sliceOfString[j])
+					}
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+3:]...)
+				} else {
+					sliceOfString[i] = Hex(sliceOfString[i])
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+2:]...)
+
+				}
+				if i == len(sliceOfString)-1 {
+					break
+				}
+			}
+
+			if strings.HasPrefix(sliceOfString[i+1], "(bin") {
+				num := 0
+				if !strings.HasPrefix(sliceOfString[len(sliceOfString)-1], "(bin") {
+
+					num = TrimAtoi(sliceOfString[i+2])
+				}
+				if num > 0 {
+					for j := i; j > i-num; j-- {
+						sliceOfString[j] = Bin(sliceOfString[j])
+					}
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+3:]...)
+				} else {
+					sliceOfString[i] = Bin(sliceOfString[i])
+					sliceOfString = append(sliceOfString[:i+1], sliceOfString[i+2:]...)
+				}
+			}
+		}
+	}
+	newString := strings.Join(sliceOfString, " ")
+	newString2 := Spaces(newString)
+	newString2Bytes := []byte(newString2)
+	outputFile := os.Args[2]
+	err2 := os.WriteFile(outputFile, newString2Bytes, 0644)
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+}
